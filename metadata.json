@@ -1,0 +1,6 @@
+{
+  "name": "BearingHub",
+  "description": "Industrial Bearing Search System MVP for workshops and spare parts stores.",
+  "requestFramePermissions": [],
+  "majorCapabilities": ["MAJOR_CAPABILITY_SERVER_SIDE_GEMINI_API"]
+}
