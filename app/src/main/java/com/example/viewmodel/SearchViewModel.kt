@@ -6,6 +6,9 @@ import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.BearingHubApplication
+import com.example.model.Bearing
+import com.example.model.BearingData
+import com.example.model.Inventory
 import com.example.repository.SearchRepository
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
@@ -22,8 +25,16 @@ class SearchViewModel(
     private val _uiState = MutableStateFlow<SearchUiState>(SearchUiState.Empty)
     val uiState: StateFlow<SearchUiState> = _uiState.asStateFlow()
 
+    private val _isOwnerModalOpen = MutableStateFlow(false)
+    val isOwnerModalOpen: StateFlow<Boolean> = _isOwnerModalOpen.asStateFlow()
+
+    private val _editingBearing = MutableStateFlow<Bearing?>(null)
+    val editingBearing: StateFlow<Bearing?> = _editingBearing.asStateFlow()
+
+    private val _editingInventory = MutableStateFlow<Inventory?>(null)
+    val editingInventory: StateFlow<Inventory?> = _editingInventory.asStateFlow()
+
     fun onQueryChanged(newQuery: String) {
-        // Automatically convert input to uppercase
         _searchQuery.value = newQuery.uppercase()
     }
 
@@ -50,6 +61,34 @@ class SearchViewModel(
                         throwable.localizedMessage ?: "Network error. Please try again."
                     )
                 }
+            )
+        }
+    }
+
+    fun openEditDialog(bearing: Bearing?, inventory: Inventory?) {
+        _editingBearing.value = bearing
+        _editingInventory.value = inventory
+        _isOwnerModalOpen.value = true
+    }
+
+    fun closeEditDialog() {
+        _isOwnerModalOpen.value = false
+        _editingBearing.value = null
+        _editingInventory.value = null
+    }
+
+    fun saveBearing(bearing: Bearing, inventory: Inventory) {
+        viewModelScope.launch {
+            repository.saveBearingDetails(bearing, listOf(inventory))
+            closeEditDialog()
+
+            // Update search bar and refresh view with updated data immediately
+            _searchQuery.value = bearing.number
+            _uiState.value = SearchUiState.Success(
+                BearingData(
+                    bearing = bearing,
+                    inventory = listOf(inventory)
+                )
             )
         }
     }

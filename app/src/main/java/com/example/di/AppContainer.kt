@@ -1,5 +1,7 @@
 package com.example.di
 
+import android.content.Context
+import com.example.data.local.AppDatabase
 import com.example.network.BearingApiService
 import com.example.network.MockBearingInterceptor
 import com.example.repository.SearchRepository
@@ -16,9 +18,13 @@ interface AppContainer {
     val searchRepository: SearchRepository
 }
 
-class DefaultAppContainer : AppContainer {
+class DefaultAppContainer(private val context: Context) : AppContainer {
     companion object {
         private const val BASE_URL = "https://bearinghub.api.internal/"
+    }
+
+    private val database: AppDatabase by lazy {
+        AppDatabase.getDatabase(context)
     }
 
     private val moshi: Moshi by lazy {
@@ -49,6 +55,9 @@ class DefaultAppContainer : AppContainer {
     }
 
     override val searchRepository: SearchRepository by lazy {
-        SearchRepositoryImpl(apiService)
+        SearchRepositoryImpl(
+            bearingDao = database.bearingDao(),
+            apiService = apiService
+        )
     }
 }

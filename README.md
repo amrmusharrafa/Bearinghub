@@ -1,12 +1,16 @@
 # BearingHub ⚙️
 
-**BearingHub** is a clean, modern Android application designed for workshop technicians, engineers, and inventory managers to rapidly search and look up technical specifications and stock levels for industrial ball bearings.
+**BearingHub** is a clean, modern Android application designed for workshop technicians, engineers, and inventory owners to rapidly search, look up technical specifications, and manage stock levels, prices, and shelf locations for industrial ball bearings.
 
 ---
 
 ## 🌟 Key Features
 
 - **Instant Bearing Lookup:** Quick search by standard bearing designation or part number (e.g., `6200` to `6280`).
+- **Owner Stock & Price Manager:**
+  - Dedicated owner management bottom sheet to add or update item prices (EGP), quantity in stock, shelf locations, conditions, and dimensions.
+  - Direct 1-tap "Owner Edit" button on inventory cards.
+  - Top bar "+ Add Bearing Item" action to register new bearing designations directly into the local database.
 - **Technical Specifications:**
   - Bore Diameter (ID) in mm
   - Outside Diameter (OD) in mm
@@ -15,9 +19,10 @@
   - Weight in kg
 - **Workshop Inventory Tracking:**
   - Real-time stock status badges (`IN STOCK` / `OUT OF STOCK`)
-  - Unit quantities and item condition (e.g., New, Sealed)
-  - Unit pricing (EGP / USD)
-  - Clear shelf location callout (e.g., `A-03-B2`, `B-01-01`)
+  - Unit quantities and item condition (e.g., New, Sealed, Refurbished)
+  - Unit pricing (EGP)
+  - Prominent shelf location callouts (e.g., `A-03-B2`, `B-01-01`)
+- **Offline Room Database Persistence:** All updates, added items, prices, and stock levels persist locally in SQLite using Android Jetpack Room.
 - **Clean Utility / Minimal Design:** Material Design 3 layout built with high-contrast slate cards, rounded container grids, and clean visual typography.
 - **Adaptive Layout:** Optimized for both portrait handheld use and landscape/tablet split-view layouts.
 
@@ -27,9 +32,10 @@
 
 - **Language:** 100% Kotlin
 - **UI Framework:** Jetpack Compose + Material Design 3 (M3)
-- **Architecture:** MVVM (Model-View-ViewModel) with Unidirectional Data Flow (StateFlow)
-- **Dependency Management:** Service Locator / Manual Dependency Injection (`AppContainer`)
-- **Networking & Data:** Retrofit2 + Moshi + OkHttp Mock Interceptor
+- **Local Persistence:** Room Database + KSP (Kotlin Symbol Processing)
+- **Architecture:** MVVM (Model-View-ViewModel) with Unidirectional Data Flow (`StateFlow` & `Flow`)
+- **Dependency Management:** Service Locator / Dependency Injection (`AppContainer`)
+- **Networking & Data:** Retrofit2 + Moshi + OkHttp
 - **Navigation:** Jetpack Navigation Compose
 
 ---
@@ -46,7 +52,7 @@ Pre-loaded with comprehensive technical and stock data for standard 6200-series 
 | **6209** | 45 | 85 | 19 | 1.1 | 0.407 |
 | **6220** | 100 | 180 | 34 | 2.1 | 3.47 |
 | **6280** | 400 | 720 | 100 | 3.0 | 157.0 |
-*(Includes full range from 6200 to 6280)*
+*(Includes full range from 6200 to 6280, customizable by the owner)*
 
 ---
 

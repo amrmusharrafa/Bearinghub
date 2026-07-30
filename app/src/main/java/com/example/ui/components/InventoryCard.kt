@@ -14,14 +14,15 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.filled.Inventory
+import androidx.compose.material.icons.filled.Edit
 import androidx.compose.material.icons.filled.Place
-import androidx.compose.material.icons.filled.Sell
+import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
+import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
@@ -43,6 +44,7 @@ import com.example.ui.theme.StockGreenText
 @Composable
 fun InventoryCard(
     inventoryList: List<Inventory>,
+    onEditClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
     val totalStock = inventoryList.sumOf { it.quantity }
@@ -111,6 +113,37 @@ fun InventoryCard(
                         Spacer(modifier = Modifier.height(16.dp))
                     }
                     InventoryItemBlock(inventory = item)
+                }
+            }
+
+            if (onEditClick != null) {
+                Spacer(modifier = Modifier.height(20.dp))
+                OutlinedButton(
+                    onClick = onEditClick,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(46.dp)
+                        .testTag("edit_inventory_button"),
+                    shape = RoundedCornerShape(14.dp),
+                    colors = ButtonDefaults.outlinedButtonColors(
+                        contentColor = MaterialTheme.colorScheme.primary
+                    ),
+                    border = ButtonDefaults.outlinedButtonBorder.copy(
+                        brush = androidx.compose.ui.graphics.SolidColor(MaterialTheme.colorScheme.primary)
+                    )
+                ) {
+                    Icon(
+                        imageVector = Icons.Default.Edit,
+                        contentDescription = "Edit Item Details",
+                        modifier = Modifier.size(18.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
+                    Text(
+                        text = "Owner Edit: Price, Stock & Specs",
+                        style = MaterialTheme.typography.labelLarge.copy(
+                            fontWeight = FontWeight.Bold
+                        )
+                    )
                 }
             }
         }
@@ -193,7 +226,7 @@ private fun InventoryItemBlock(
 
         Spacer(modifier = Modifier.height(14.dp))
 
-        // Shelf Location Callout Card (Dark Slate Box matching Clean Utility spec)
+        // Shelf Location Callout Card
         Box(
             modifier = Modifier
                 .fillMaxWidth()
@@ -246,4 +279,3 @@ private fun InventoryItemBlock(
         }
     }
 }
-

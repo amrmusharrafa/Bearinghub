@@ -5,7 +5,6 @@ import androidx.compose.animation.AnimatedContent
 import androidx.compose.animation.fadeIn
 import androidx.compose.animation.fadeOut
 import androidx.compose.animation.togetherWith
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -18,16 +17,16 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Add
 import androidx.compose.material.icons.filled.Engineering
-import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Surface
@@ -38,6 +37,7 @@ import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
+import androidx.compose.ui.platform.testTag
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -48,6 +48,7 @@ import com.example.ui.components.ErrorView
 import com.example.ui.components.InventoryCard
 import com.example.ui.components.LoadingView
 import com.example.ui.components.NotFoundView
+import com.example.ui.components.OwnerManageModal
 import com.example.ui.components.SearchBar
 import com.example.viewmodel.SearchUiState
 import com.example.viewmodel.SearchViewModel
@@ -60,6 +61,10 @@ fun SearchScreen(
 ) {
     val searchQuery by viewModel.searchQuery.collectAsStateWithLifecycle()
     val uiState by viewModel.uiState.collectAsStateWithLifecycle()
+    val isOwnerModalOpen by viewModel.isOwnerModalOpen.collectAsStateWithLifecycle()
+    val editingBearing by viewModel.editingBearing.collectAsStateWithLifecycle()
+    val editingInventory by viewModel.editingInventory.collectAsStateWithLifecycle()
+
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
@@ -102,6 +107,24 @@ fun SearchScreen(
                                 text = "Industrial Bearing Search",
                                 style = MaterialTheme.typography.labelSmall,
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        }
+                    }
+                },
+                actions = {
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(12.dp),
+                        modifier = Modifier.padding(end = 12.dp)
+                    ) {
+                        IconButton(
+                            onClick = { viewModel.openEditDialog(null, null) },
+                            modifier = Modifier.testTag("add_bearing_topbar_button")
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.Add,
+                                contentDescription = "Add New Bearing Item",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
                     }
@@ -152,6 +175,9 @@ fun SearchScreen(
                         }
 
                         is SearchUiState.Success -> {
+                            val bearing = state.bearingData.bearing
+                            val inventoryList = state.bearingData.inventory
+
                             if (isLandscape) {
                                 Row(
                                     modifier = Modifier
@@ -161,13 +187,19 @@ fun SearchScreen(
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     BearingInfoCard(
-                                        bearing = state.bearingData.bearing,
+                                        bearing = bearing,
                                         modifier = Modifier
                                             .weight(1f)
                                             .padding(bottom = 16.dp)
                                     )
                                     InventoryCard(
-                                        inventoryList = state.bearingData.inventory,
+                                        inventoryList = inventoryList,
+                                        onEditClick = {
+                                            viewModel.openEditDialog(
+                                                bearing = bearing,
+                                                inventory = inventoryList.firstOrNull()
+                                            )
+                                        },
                                         modifier = Modifier
                                             .weight(1f)
                                             .padding(bottom = 16.dp)
@@ -181,8 +213,16 @@ fun SearchScreen(
                                         .verticalScroll(rememberScrollState()),
                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    BearingInfoCard(bearing = state.bearingData.bearing)
-                                    InventoryCard(inventoryList = state.bearingData.inventory)
+                                    BearingInfoCard(bearing = bearing)
+                                    InventoryCard(
+                                        inventoryList = inventoryList,
+                                        onEditClick = {
+                                            viewModel.openEditDialog(
+                                                bearing = bearing,
+                                                inventory = inventoryList.firstOrNull()
+                                            )
+                                        }
+                                    )
                                     Spacer(modifier = Modifier.height(16.dp))
                                 }
                             }
@@ -201,6 +241,17 @@ fun SearchScreen(
                     }
                 }
             }
+        }
+
+        if (isOwnerModalOpen) {
+            OwnerManageModal(
+                bearing = editingBearing,
+                inventory = editingInventory,
+                onDismiss = { viewModel.closeEditDialog() },
+                onSave = { updatedBearing, updatedInventory ->
+                    viewModel.saveBearing(updatedBearing, updatedInventory)
+                }
+            )
         }
     }
 }
