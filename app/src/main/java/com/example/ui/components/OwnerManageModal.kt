@@ -83,6 +83,12 @@ fun OwnerManageModal(
     var chamferMmStr by remember(bearing) { mutableStateOf(bearing?.chamferMm?.toString() ?: "1.0") }
     var weightKgStr by remember(bearing) { mutableStateOf(bearing?.weightKg?.toString() ?: "0.106") }
 
+    var refSpeedStr by remember(bearing) { mutableStateOf(bearing?.referenceSpeedRpm?.toString() ?: "32000") }
+    var greaseSpeedStr by remember(bearing) { mutableStateOf(bearing?.limitingSpeedGreaseRpm?.toString() ?: "17000") }
+    var oilSpeedStr by remember(bearing) { mutableStateOf(bearing?.limitingSpeedOilRpm?.toString() ?: "20000") }
+    var dynamicLoadStr by remember(bearing) { mutableStateOf(bearing?.dynamicLoadC?.toString() ?: "12.79") }
+    var staticLoadStr by remember(bearing) { mutableStateOf(bearing?.staticLoadC0?.toString() ?: "6.58") }
+
     var errorMessage by remember { mutableStateOf<String?>(null) }
 
     ModalBottomSheet(
@@ -374,6 +380,92 @@ fun OwnerManageModal(
                 }
             }
 
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // --- SECTION 3: PERFORMANCE SPECIFICATIONS ---
+            Card(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .border(1.dp, IndustrialBorderColor, RoundedCornerShape(16.dp)),
+                shape = RoundedCornerShape(16.dp),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant.copy(alpha = 0.3f))
+            ) {
+                Column(modifier = Modifier.padding(16.dp)) {
+                    Text(
+                        text = "PERFORMANCE SPECS",
+                        style = MaterialTheme.typography.labelSmall.copy(
+                            fontWeight = FontWeight.Bold,
+                            letterSpacing = 1.sp
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = refSpeedStr,
+                            onValueChange = { refSpeedStr = it },
+                            label = { Text("Ref Speed (RPM)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        OutlinedTextField(
+                            value = greaseSpeedStr,
+                            onValueChange = { greaseSpeedStr = it },
+                            label = { Text("Grease Limit (RPM)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        OutlinedTextField(
+                            value = oilSpeedStr,
+                            onValueChange = { oilSpeedStr = it },
+                            label = { Text("Oil Limit (RPM)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+                    }
+
+                    Spacer(modifier = Modifier.height(12.dp))
+
+                    Row(
+                        modifier = Modifier.fillMaxWidth(),
+                        horizontalArrangement = Arrangement.spacedBy(10.dp)
+                    ) {
+                        OutlinedTextField(
+                            value = dynamicLoadStr,
+                            onValueChange = { dynamicLoadStr = it },
+                            label = { Text("Dynamic Load C (kN)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+
+                        OutlinedTextField(
+                            value = staticLoadStr,
+                            onValueChange = { staticLoadStr = it },
+                            label = { Text("Static Load C0 (kN)") },
+                            singleLine = true,
+                            modifier = Modifier.weight(1f),
+                            shape = RoundedCornerShape(12.dp),
+                            keyboardOptions = KeyboardOptions(keyboardType = KeyboardType.Number)
+                        )
+                    }
+                }
+            }
+
             Spacer(modifier = Modifier.height(24.dp))
 
             // Action Buttons
@@ -404,6 +496,12 @@ fun OwnerManageModal(
                         val parsedChamfer = chamferMmStr.toDoubleOrNull()
                         val parsedWeight = weightKgStr.toDoubleOrNull()
 
+                        val parsedRefSpeed = refSpeedStr.toIntOrNull() ?: 0
+                        val parsedGreaseSpeed = greaseSpeedStr.toIntOrNull() ?: 0
+                        val parsedOilSpeed = oilSpeedStr.toIntOrNull() ?: 0
+                        val parsedDynamicLoad = dynamicLoadStr.toDoubleOrNull() ?: 0.0
+                        val parsedStaticLoad = staticLoadStr.toDoubleOrNull() ?: 0.0
+
                         if (parsedPrice == null || parsedQty == null || parsedBore == null ||
                             parsedOutside == null || parsedWidth == null || parsedChamfer == null || parsedWeight == null) {
                             errorMessage = "Please enter valid numeric values for price, quantity, dimensions, and weight."
@@ -419,7 +517,12 @@ fun OwnerManageModal(
                             outsideMm = parsedOutside,
                             widthMm = parsedWidth,
                             chamferMm = parsedChamfer,
-                            weightKg = parsedWeight
+                            weightKg = parsedWeight,
+                            referenceSpeedRpm = parsedRefSpeed,
+                            limitingSpeedGreaseRpm = parsedGreaseSpeed,
+                            limitingSpeedOilRpm = parsedOilSpeed,
+                            dynamicLoadC = parsedDynamicLoad,
+                            staticLoadC0 = parsedStaticLoad
                         )
 
                         val updatedInventory = Inventory(

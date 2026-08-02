@@ -169,7 +169,76 @@ fun BearingInfoCard(
                     }
                 }
             }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            Text(
+                text = "PERFORMANCE SPECIFICATIONS",
+                style = MaterialTheme.typography.labelSmall.copy(
+                    fontWeight = FontWeight.Bold,
+                    letterSpacing = 1.2.sp
+                ),
+                color = MaterialTheme.colorScheme.onSurfaceVariant
+            )
+
+            Spacer(modifier = Modifier.height(10.dp))
+
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .clip(RoundedCornerShape(16.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .padding(16.dp)
+            ) {
+                Column(verticalArrangement = Arrangement.spacedBy(12.dp)) {
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        GridItem(
+                            label = "Reference Speed",
+                            value = "${bearing.referenceSpeedRpm} RPM",
+                            modifier = Modifier.weight(1f)
+                        )
+                        GridItem(
+                            label = "Grease Limiting Speed",
+                            value = "${bearing.limitingSpeedGreaseRpm} RPM",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    HorizontalDivider(color = IndustrialBorderColor.copy(alpha = 0.6f))
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        GridItem(
+                            label = "Oil Limiting Speed",
+                            value = "${bearing.limitingSpeedOilRpm} RPM",
+                            modifier = Modifier.weight(1f)
+                        )
+                        GridItem(
+                            label = "Dynamic Load Rating (C)",
+                            value = "${formatNumber(bearing.dynamicLoadC)} kN",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+
+                    HorizontalDivider(color = IndustrialBorderColor.copy(alpha = 0.6f))
+
+                    Row(modifier = Modifier.fillMaxWidth()) {
+                        GridItem(
+                            label = "Static Load Rating (C0)",
+                            value = "${formatNumber(bearing.staticLoadC0)} kN",
+                            modifier = Modifier.weight(1f)
+                        )
+                    }
+                }
+            }
         }
+    }
+}
+
+private fun formatNumber(value: Double): String {
+    return if (value % 1.0 == 0.0) {
+        value.toLong().toString()
+    } else {
+        value.toString()
     }
 }
 

@@ -19,7 +19,12 @@ class MockBearingInterceptor : Interceptor {
         val quantity: Int,
         val price: Double,
         val shelfLocation: String,
-        val condition: String = "New"
+        val condition: String = "New",
+        val referenceSpeedRpm: Int = 0,
+        val limitingSpeedGreaseRpm: Int = 0,
+        val limitingSpeedOilRpm: Int = 0,
+        val dynamicLoadC: Double = 0.0,
+        val staticLoadC0: Double = 0.0
     )
 
     private val bearingDatabase = mapOf(
@@ -118,7 +123,12 @@ class MockBearingInterceptor : Interceptor {
                   "outsideMm": ${spec.outsideMm},
                   "widthMm": ${spec.widthMm},
                   "chamferMm": ${spec.chamferMm},
-                  "weightKg": ${spec.weightKg}
+                  "weightKg": ${spec.weightKg},
+                  "referenceSpeedRpm": ${spec.referenceSpeedRpm},
+                  "limitingSpeedGreaseRpm": ${spec.limitingSpeedGreaseRpm},
+                  "limitingSpeedOilRpm": ${spec.limitingSpeedOilRpm},
+                  "dynamicLoadC": ${spec.dynamicLoadC},
+                  "staticLoadC0": ${spec.staticLoadC0}
                 },
                 "inventory": [
                   {

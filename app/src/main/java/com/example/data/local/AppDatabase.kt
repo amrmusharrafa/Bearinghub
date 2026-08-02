@@ -11,7 +11,7 @@ import com.example.data.local.entity.InventoryEntity
 
 @Database(
     entities = [BearingEntity::class, InventoryEntity::class],
-    version = 1,
+    version = 2,
     exportSchema = false
 )
 abstract class AppDatabase : RoomDatabase() {

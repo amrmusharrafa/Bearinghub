@@ -13,7 +13,12 @@ data class BearingEntity(
     val outsideMm: Double,
     val widthMm: Double,
     val chamferMm: Double,
-    val weightKg: Double
+    val weightKg: Double,
+    val referenceSpeedRpm: Int = 0,
+    val limitingSpeedGreaseRpm: Int = 0,
+    val limitingSpeedOilRpm: Int = 0,
+    val dynamicLoadC: Double = 0.0,
+    val staticLoadC0: Double = 0.0
 ) {
     fun toDomainModel(): Bearing {
         return Bearing(
@@ -23,7 +28,12 @@ data class BearingEntity(
             outsideMm = outsideMm,
             widthMm = widthMm,
             chamferMm = chamferMm,
-            weightKg = weightKg
+            weightKg = weightKg,
+            referenceSpeedRpm = referenceSpeedRpm,
+            limitingSpeedGreaseRpm = limitingSpeedGreaseRpm,
+            limitingSpeedOilRpm = limitingSpeedOilRpm,
+            dynamicLoadC = dynamicLoadC,
+            staticLoadC0 = staticLoadC0
         )
     }
 
@@ -36,7 +46,12 @@ data class BearingEntity(
                 outsideMm = bearing.outsideMm,
                 widthMm = bearing.widthMm,
                 chamferMm = bearing.chamferMm,
-                weightKg = bearing.weightKg
+                weightKg = bearing.weightKg,
+                referenceSpeedRpm = bearing.referenceSpeedRpm,
+                limitingSpeedGreaseRpm = bearing.limitingSpeedGreaseRpm,
+                limitingSpeedOilRpm = bearing.limitingSpeedOilRpm,
+                dynamicLoadC = bearing.dynamicLoadC,
+                staticLoadC0 = bearing.staticLoadC0
             )
         }
     }
