@@ -12,16 +12,16 @@ import kotlinx.coroutines.flow.Flow
 @Dao
 interface BearingDao {
 
-    @Query("SELECT * FROM bearings WHERE UPPER(number) = UPPER(:number) OR UPPER(:number) LIKE UPPER(number) || '%' OR UPPER(number) LIKE UPPER(:number) || '%' LIMIT 1")
+    @Query("SELECT * FROM bearings WHERE UPPER(TRIM(number)) = UPPER(TRIM(:number)) OR UPPER(TRIM(:number)) LIKE UPPER(TRIM(number)) || '%' OR UPPER(TRIM(number)) LIKE UPPER(TRIM(:number)) || '%' ORDER BY CASE WHEN UPPER(TRIM(number)) = UPPER(TRIM(:number)) THEN 0 ELSE 1 END, LENGTH(number) ASC LIMIT 1")
     suspend fun getBearingByNumber(number: String): BearingEntity?
 
-    @Query("SELECT * FROM bearings WHERE number = :number LIMIT 1")
+    @Query("SELECT * FROM bearings WHERE UPPER(TRIM(number)) = UPPER(TRIM(:number)) LIMIT 1")
     fun getBearingByNumberFlow(number: String): Flow<BearingEntity?>
 
-    @Query("SELECT * FROM inventories WHERE bearingNumber = :bearingNumber")
+    @Query("SELECT * FROM inventories WHERE UPPER(TRIM(bearingNumber)) = UPPER(TRIM(:bearingNumber))")
     suspend fun getInventoryByBearingNumber(bearingNumber: String): List<InventoryEntity>
 
-    @Query("SELECT * FROM inventories WHERE bearingNumber = :bearingNumber")
+    @Query("SELECT * FROM inventories WHERE UPPER(TRIM(bearingNumber)) = UPPER(TRIM(:bearingNumber))")
     fun getInventoryByBearingNumberFlow(bearingNumber: String): Flow<List<InventoryEntity>>
 
     @Query("SELECT * FROM bearings ORDER BY number ASC")
@@ -29,6 +29,9 @@ interface BearingDao {
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertBearing(bearing: BearingEntity)
+
+    @Insert(onConflict = OnConflictStrategy.IGNORE)
+    suspend fun insertBearings(bearings: List<BearingEntity>)
 
     @Insert(onConflict = OnConflictStrategy.REPLACE)
     suspend fun insertInventoryList(inventories: List<InventoryEntity>)

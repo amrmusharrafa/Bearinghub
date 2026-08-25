@@ -1,5 +1,6 @@
 package com.example.repository
 
+import com.example.data.MasterBearingCatalog
 import com.example.data.MockBearingCatalog
 import com.example.data.local.AppDatabase
 import com.example.data.local.dao.BearingDao
@@ -26,8 +27,8 @@ class SearchRepositoryImpl(
         }
 
         return try {
-            // Ensure initial seeding if DB is empty
-            if (bearingDao.getBearingsCount() == 0) {
+            // Ensure initial seeding of the complete 268-bearing master catalog
+            if (bearingDao.getBearingsCount() < MasterBearingCatalog.allBearings.size) {
                 AppDatabase.seedInitialData(bearingDao)
             }
 

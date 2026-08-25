@@ -194,12 +194,12 @@ fun BearingInfoCard(
                     Row(modifier = Modifier.fillMaxWidth()) {
                         GridItem(
                             label = "Reference Speed",
-                            value = "${bearing.referenceSpeedRpm} RPM",
+                            value = if (bearing.referenceSpeedRpm > 0) "%,d RPM".format(bearing.referenceSpeedRpm) else "—",
                             modifier = Modifier.weight(1f)
                         )
                         GridItem(
                             label = "Grease Limiting Speed",
-                            value = "${bearing.limitingSpeedGreaseRpm} RPM",
+                            value = "%,d RPM".format(bearing.limitingSpeedGreaseRpm),
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -209,12 +209,12 @@ fun BearingInfoCard(
                     Row(modifier = Modifier.fillMaxWidth()) {
                         GridItem(
                             label = "Oil Limiting Speed",
-                            value = "${bearing.limitingSpeedOilRpm} RPM",
+                            value = "%,d RPM".format(bearing.limitingSpeedOilRpm),
                             modifier = Modifier.weight(1f)
                         )
                         GridItem(
                             label = "Dynamic Load Rating (C)",
-                            value = "${formatNumber(bearing.dynamicLoadC)} kN",
+                            value = formatLoad(bearing.dynamicLoadC),
                             modifier = Modifier.weight(1f)
                         )
                     }
@@ -224,13 +224,22 @@ fun BearingInfoCard(
                     Row(modifier = Modifier.fillMaxWidth()) {
                         GridItem(
                             label = "Static Load Rating (C0)",
-                            value = "${formatNumber(bearing.staticLoadC0)} kN",
+                            value = formatLoad(bearing.staticLoadC0),
                             modifier = Modifier.weight(1f)
                         )
                     }
                 }
             }
         }
+    }
+}
+
+private fun formatLoad(value: Double): String {
+    val intVal = value.toLong()
+    return if (value >= 1000) {
+        "%,d N (%.2f kN)".format(intVal, value / 1000.0)
+    } else {
+        "%,d N".format(intVal)
     }
 }
 
