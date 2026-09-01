@@ -56,23 +56,29 @@ fun BearingInfoCard(
                 .fillMaxWidth()
                 .padding(24.dp)
         ) {
-            // Header Row: Manufacturer & Bearing Number
+            // Header Row: Manufacturer & Bearing Number & Bearing Type
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 horizontalArrangement = Arrangement.SpaceBetween,
-                verticalAlignment = Alignment.CenterVertically
+                verticalAlignment = Alignment.Top
             ) {
-                Column {
-                    Text(
-                        text = "MANUFACTURER",
-                        style = MaterialTheme.typography.labelSmall.copy(
-                            fontWeight = FontWeight.Bold,
-                            letterSpacing = 1.2.sp
-                        ),
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                Column(modifier = Modifier.weight(1f, fill = false)) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(8.dp)
+                    ) {
+                        Text(
+                            text = bearing.bearingType,
+                            modifier = Modifier.padding(horizontal = 8.dp, vertical = 3.dp),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.SemiBold,
+                                fontSize = 11.sp
+                            ),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
 
-                    Spacer(modifier = Modifier.height(2.dp))
+                    Spacer(modifier = Modifier.height(6.dp))
 
                     Text(
                         text = bearing.manufacturer.uppercase(),
@@ -83,7 +89,7 @@ fun BearingInfoCard(
                     )
 
                     Text(
-                        text = "Series: ${bearing.number}",
+                        text = "Designation: ${bearing.number}",
                         style = MaterialTheme.typography.bodyMedium.copy(
                             fontWeight = FontWeight.Medium
                         ),

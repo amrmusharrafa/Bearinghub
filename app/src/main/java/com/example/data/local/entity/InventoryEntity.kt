@@ -22,17 +22,19 @@ data class InventoryEntity(
     @PrimaryKey(autoGenerate = true)
     val id: Long = 0,
     val bearingNumber: String,
-    val condition: String,
-    val quantity: Int,
-    val sellingPrice: Double,
-    val shelfLocation: String
+    val condition: String = "New",
+    val quantity: Int? = null,
+    val sellingPrice: Double? = null,
+    val shelfLocation: String = "",
+    val currency: String = "EGP"
 ) {
     fun toDomainModel(): Inventory {
         return Inventory(
             condition = condition,
             quantity = quantity,
             sellingPrice = sellingPrice,
-            shelfLocation = shelfLocation
+            shelfLocation = shelfLocation,
+            currency = currency
         )
     }
 
@@ -43,7 +45,8 @@ data class InventoryEntity(
                 condition = inventory.condition,
                 quantity = inventory.quantity,
                 sellingPrice = inventory.sellingPrice,
-                shelfLocation = inventory.shelfLocation
+                shelfLocation = inventory.shelfLocation,
+                currency = inventory.currency
             )
         }
     }

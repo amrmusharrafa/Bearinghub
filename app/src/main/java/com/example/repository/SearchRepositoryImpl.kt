@@ -100,6 +100,18 @@ class SearchRepositoryImpl(
         }
     }
 
+    override suspend fun updateBearingPhoto(
+        number: String,
+        imageUri: String?
+    ): Result<Unit> {
+        return try {
+            bearingDao.updateBearingPhoto(number.trim().uppercase(), imageUri)
+            Result.success(Unit)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
     override fun getBearingFlow(number: String): Flow<SearchResponse?> {
         val cleanNumber = number.trim().uppercase()
         val bearingFlow = bearingDao.getBearingByNumberFlow(cleanNumber)

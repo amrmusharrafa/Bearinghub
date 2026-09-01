@@ -93,6 +93,19 @@ class SearchViewModel(
         }
     }
 
+    fun updateBearingPhoto(number: String, imageUri: String?) {
+        viewModelScope.launch {
+            repository.updateBearingPhoto(number, imageUri)
+            val currentState = _uiState.value
+            if (currentState is SearchUiState.Success && currentState.bearingData.bearing.number.equals(number, ignoreCase = true)) {
+                val updatedBearing = currentState.bearingData.bearing.copy(customDrawingUri = imageUri)
+                _uiState.value = SearchUiState.Success(
+                    currentState.bearingData.copy(bearing = updatedBearing)
+                )
+            }
+        }
+    }
+
     fun retry() {
         search()
     }

@@ -1,3 +1,8 @@
 <resources>
     <string name="app_name">BearingHub</string>
+    <string name="section_bearing_drawing">Bearing Drawing</string>
+    <string name="download_drawing">Download Bearing Drawing</string>
+    <string name="no_drawing_available">No drawing available</string>
+    <string name="drawing_saved_success">Bearing drawing saved successfully.</string>
+    <string name="drawing_saved_error">Unable to save bearing drawing. Please try again.</string>
 </resources>

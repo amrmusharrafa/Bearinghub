@@ -6,7 +6,8 @@ import com.squareup.moshi.JsonClass
 @JsonClass(generateAdapter = true)
 data class Bearing(
     @field:Json(name = "number") val number: String,
-    @field:Json(name = "manufacturer") val manufacturer: String,
+    @field:Json(name = "manufacturer") val manufacturer: String = "SKF",
+    @field:Json(name = "bearingType") val bearingType: String = "Deep Groove Ball Bearings",
     @field:Json(name = "boreMm") val boreMm: Double,
     @field:Json(name = "outsideMm") val outsideMm: Double,
     @field:Json(name = "widthMm") val widthMm: Double,
@@ -16,5 +17,7 @@ data class Bearing(
     @field:Json(name = "limitingSpeedGreaseRpm") val limitingSpeedGreaseRpm: Int = 0,
     @field:Json(name = "limitingSpeedOilRpm") val limitingSpeedOilRpm: Int = 0,
     @field:Json(name = "dynamicLoadC") val dynamicLoadC: Double = 0.0,
-    @field:Json(name = "staticLoadC0") val staticLoadC0: Double = 0.0
+    @field:Json(name = "staticLoadC0") val staticLoadC0: Double = 0.0,
+    @field:Json(name = "drawingResName") val drawingResName: String? = null,
+    @field:Json(name = "customDrawingUri") val customDrawingUri: String? = null
 )

@@ -51,4 +51,7 @@ interface BearingDao {
 
     @Query("SELECT COUNT(*) FROM bearings")
     suspend fun getBearingsCount(): Int
+
+    @Query("UPDATE bearings SET customDrawingUri = :customDrawingUri WHERE UPPER(TRIM(number)) = UPPER(TRIM(:number))")
+    suspend fun updateBearingPhoto(number: String, customDrawingUri: String?)
 }

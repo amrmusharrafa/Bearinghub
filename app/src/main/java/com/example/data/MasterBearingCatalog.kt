@@ -27,7 +27,8 @@ object MasterBearingCatalog {
 
         return BearingEntity(
             number = designation,
-            manufacturer = "ISO / DIN Standard",
+            manufacturer = "SKF",
+            bearingType = "Deep Groove Ball Bearings",
             boreMm = d,
             outsideMm = D,
             widthMm = B,
@@ -37,7 +38,8 @@ object MasterBearingCatalog {
             limitingSpeedGreaseRpm = grease,
             limitingSpeedOilRpm = oil,
             dynamicLoadC = C,
-            staticLoadC0 = C0
+            staticLoadC0 = C0,
+            drawingResName = "deepgroovebearingdrawing"
         )
     }
 

@@ -47,8 +47,9 @@ fun InventoryCard(
     onEditClick: (() -> Unit)? = null,
     modifier: Modifier = Modifier
 ) {
-    val totalStock = inventoryList.sumOf { it.quantity }
-    val isInStock = totalStock > 0
+    val totalStock = inventoryList.mapNotNull { it.quantity }.sum()
+    val hasQuantitySet = inventoryList.any { it.quantity != null }
+    val isInStock = hasQuantitySet && totalStock > 0
 
     Card(
         modifier = modifier
@@ -81,18 +82,34 @@ fun InventoryCard(
                 )
 
                 // Stock Badge
+                val badgeContainerColor = when {
+                    !hasQuantitySet -> MaterialTheme.colorScheme.surfaceVariant
+                    isInStock -> StockGreenContainer
+                    else -> MaterialTheme.colorScheme.errorContainer
+                }
+                val badgeTextColor = when {
+                    !hasQuantitySet -> MaterialTheme.colorScheme.onSurfaceVariant
+                    isInStock -> StockGreenText
+                    else -> MaterialTheme.colorScheme.onErrorContainer
+                }
+                val badgeLabel = when {
+                    !hasQuantitySet -> "STOCK NOT SET"
+                    isInStock -> "IN STOCK"
+                    else -> "OUT OF STOCK"
+                }
+
                 Surface(
-                    color = if (isInStock) StockGreenContainer else MaterialTheme.colorScheme.errorContainer,
+                    color = badgeContainerColor,
                     shape = RoundedCornerShape(50.dp)
                 ) {
                     Text(
-                        text = if (isInStock) "IN STOCK" else "OUT OF STOCK",
+                        text = badgeLabel,
                         modifier = Modifier.padding(horizontal = 10.dp, vertical = 4.dp),
                         style = MaterialTheme.typography.labelSmall.copy(
                             fontWeight = FontWeight.Bold,
                             letterSpacing = 0.5.sp
                         ),
-                        color = if (isInStock) StockGreenText else MaterialTheme.colorScheme.onErrorContainer
+                        color = badgeTextColor
                     )
                 }
             }
@@ -118,7 +135,7 @@ fun InventoryCard(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Not recorded",
+                                text = "Quantity not set",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -134,7 +151,7 @@ fun InventoryCard(
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Text(
-                                text = "Not recorded",
+                                text = "Price not set",
                                 style = MaterialTheme.typography.bodyMedium.copy(fontWeight = FontWeight.SemiBold),
                                 color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
@@ -208,7 +225,7 @@ private fun InventoryItemBlock(
                 shape = RoundedCornerShape(8.dp)
             ) {
                 Text(
-                    text = inventory.condition,
+                    text = inventory.condition.ifBlank { "New" },
                     modifier = Modifier.padding(horizontal = 10.dp, vertical = 3.dp),
                     style = MaterialTheme.typography.labelMedium.copy(fontWeight = FontWeight.Bold),
                     color = MaterialTheme.colorScheme.onSurface
@@ -229,13 +246,23 @@ private fun InventoryItemBlock(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                text = "${inventory.quantity} units",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    fontWeight = FontWeight.Bold
-                ),
-                color = if (inventory.quantity > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
-            )
+            if (inventory.quantity != null) {
+                Text(
+                    text = "${inventory.quantity} units",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        fontWeight = FontWeight.Bold
+                    ),
+                    color = if (inventory.quantity > 0) MaterialTheme.colorScheme.onSurface else MaterialTheme.colorScheme.error
+                )
+            } else {
+                Text(
+                    text = "Quantity not set",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(10.dp))
@@ -251,13 +278,41 @@ private fun InventoryItemBlock(
                 style = MaterialTheme.typography.bodyMedium,
                 color = MaterialTheme.colorScheme.onSurfaceVariant
             )
-            Text(
-                text = "$${inventory.sellingPrice}",
-                style = MaterialTheme.typography.titleLarge.copy(
-                    fontWeight = FontWeight.ExtraBold
-                ),
-                color = MaterialTheme.colorScheme.primary
-            )
+            if (inventory.sellingPrice != null) {
+                Row(
+                    verticalAlignment = Alignment.CenterVertically,
+                    horizontalArrangement = Arrangement.spacedBy(6.dp)
+                ) {
+                    Surface(
+                        color = MaterialTheme.colorScheme.primaryContainer,
+                        shape = RoundedCornerShape(6.dp)
+                    ) {
+                        Text(
+                            text = inventory.currency,
+                            modifier = Modifier.padding(horizontal = 6.dp, vertical = 2.dp),
+                            style = MaterialTheme.typography.labelSmall.copy(
+                                fontWeight = FontWeight.Bold
+                            ),
+                            color = MaterialTheme.colorScheme.onPrimaryContainer
+                        )
+                    }
+                    Text(
+                        text = formatPrice(inventory.sellingPrice, inventory.currency),
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.ExtraBold
+                        ),
+                        color = MaterialTheme.colorScheme.primary
+                    )
+                }
+            } else {
+                Text(
+                    text = "Price not set",
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontWeight = FontWeight.SemiBold
+                    ),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
         }
 
         Spacer(modifier = Modifier.height(14.dp))
@@ -287,7 +342,7 @@ private fun InventoryItemBlock(
                     )
                     Spacer(modifier = Modifier.height(2.dp))
                     Text(
-                        text = inventory.shelfLocation,
+                        text = inventory.shelfLocation.ifBlank { "Not specified" },
                         style = MaterialTheme.typography.titleLarge.copy(
                             fontWeight = FontWeight.Bold,
                             fontFamily = FontFamily.Monospace,
@@ -313,5 +368,15 @@ private fun InventoryItemBlock(
                 }
             }
         }
+    }
+}
+
+private fun formatPrice(price: Double, currency: String): String {
+    val formattedNumber = if (price % 1.0 == 0.0) price.toLong().toString() else "%.2f".format(price)
+    return when (currency.trim().uppercase()) {
+        "USD" -> "$$formattedNumber"
+        "EUR" -> "€$formattedNumber"
+        "EGP" -> "$formattedNumber EGP"
+        else -> "$formattedNumber $currency"
     }
 }

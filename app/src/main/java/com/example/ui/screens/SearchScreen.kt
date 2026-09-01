@@ -29,11 +29,15 @@ import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Scaffold
+import androidx.compose.material3.SnackbarHost
+import androidx.compose.material3.SnackbarHostState
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberCoroutineScope
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.platform.LocalConfiguration
@@ -42,6 +46,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.compose.collectAsStateWithLifecycle
+import com.example.ui.components.BearingDrawingSection
 import com.example.ui.components.BearingInfoCard
 import com.example.ui.components.EmptyView
 import com.example.ui.components.ErrorView
@@ -52,6 +57,7 @@ import com.example.ui.components.OwnerManageModal
 import com.example.ui.components.SearchBar
 import com.example.viewmodel.SearchUiState
 import com.example.viewmodel.SearchViewModel
+import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -65,12 +71,16 @@ fun SearchScreen(
     val editingBearing by viewModel.editingBearing.collectAsStateWithLifecycle()
     val editingInventory by viewModel.editingInventory.collectAsStateWithLifecycle()
 
+    val snackbarHostState = remember { SnackbarHostState() }
+    val coroutineScope = rememberCoroutineScope()
+
     val configuration = LocalConfiguration.current
     val isLandscape = configuration.orientation == Configuration.ORIENTATION_LANDSCAPE
 
     Scaffold(
         modifier = modifier.fillMaxSize(),
         contentWindowInsets = WindowInsets.safeDrawing,
+        snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
         topBar = {
             CenterAlignedTopAppBar(
                 title = {
@@ -186,12 +196,25 @@ fun SearchScreen(
                                         .verticalScroll(rememberScrollState()),
                                     horizontalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
-                                    BearingInfoCard(
-                                        bearing = bearing,
+                                    Column(
                                         modifier = Modifier
-                                            .weight(1f)
-                                            .padding(bottom = 16.dp)
-                                    )
+                                           .weight(1f)
+                                           .padding(bottom = 16.dp),
+                                        verticalArrangement = Arrangement.spacedBy(16.dp)
+                                    ) {
+                                        BearingInfoCard(bearing = bearing)
+                                        BearingDrawingSection(
+                                            bearing = bearing,
+                                            onPhotoUploaded = { newPhotoUri ->
+                                                viewModel.updateBearingPhoto(bearing.number, newPhotoUri)
+                                            },
+                                            onShowMessage = { msg ->
+                                                coroutineScope.launch {
+                                                    snackbarHostState.showSnackbar(msg)
+                                                }
+                                            }
+                                        )
+                                    }
                                     InventoryCard(
                                         inventoryList = inventoryList,
                                         onEditClick = {
@@ -214,6 +237,17 @@ fun SearchScreen(
                                     verticalArrangement = Arrangement.spacedBy(16.dp)
                                 ) {
                                     BearingInfoCard(bearing = bearing)
+                                    BearingDrawingSection(
+                                        bearing = bearing,
+                                        onPhotoUploaded = { newPhotoUri ->
+                                            viewModel.updateBearingPhoto(bearing.number, newPhotoUri)
+                                        },
+                                        onShowMessage = { msg ->
+                                            coroutineScope.launch {
+                                                snackbarHostState.showSnackbar(msg)
+                                            }
+                                        }
+                                    )
                                     InventoryCard(
                                         inventoryList = inventoryList,
                                         onEditClick = {
